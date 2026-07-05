@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Probar funcionalidades — Norma Watch Perú</title>
+  <meta name="description" content="Pruebe en línea las funciones gratuitas de Norma Watch Perú: buscador legal de normas del Estado peruano, exportación y alertas." />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <style>
+    :root {
+      --granate-1: #7f1d1d;
+      --granate-2: #b91c1c;
+      --dorado: #fbbf24;
+      --tinta: #1c2430;
+      --gris: #64748b;
+      --fondo: #f4f6f9;
+      --borde: #e2e8f0;
+      --indigo: #4f46e5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--tinta); background: var(--fondo); line-height: 1.55; }
+    a { color: var(--granate-2); }
+    .contenedor { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+    /* ---------- cabecera ---------- */
+    .cab { background: linear-gradient(135deg, var(--granate-1), var(--granate-2)); color: #fff; padding: 20px 0 24px; }
+    .cab-fila { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .cab img { width: 54px; height: 54px; border-radius: 14px; }
+    .cab h1 { font-size: clamp(19px, 4vw, 26px); }
+    .cab p { font-size: 13px; opacity: .9; }
+    .cab a.volver { color: #fff; font-size: 13px; font-weight: 700; text-decoration: none; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35); border-radius: 20px; padding: 7px 16px; margin-left: auto; }
+
+    /* ---------- menú de funciones ---------- */
+    .menu-func { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 22px 0; }
+    .menu-func a { display: block; background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; text-decoration: none; color: var(--tinta); font-size: 13px; font-weight: 700; text-align: center; }
+    .menu-func a:hover { border-color: var(--granate-2); }
+    .menu-func a small { display: block; font-weight: 600; font-size: 10.5px; margin-top: 3px; }
+    .menu-func a small.ok { color: #166534; }
+    .menu-func a small.lock { color: #92400e; }
+
+    section { margin-bottom: 34px; scroll-margin-top: 12px; }
+    section > h2 { font-size: clamp(18px, 3vw, 22px); color: var(--granate-2); margin-bottom: 4px; }
+    section > p.desc { font-size: 13.5px; color: var(--gris); margin-bottom: 14px; }
+    .panel { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 18px; }
+
+    /* ---------- buscador ---------- */
+    .fila-buscar { display: flex; gap: 8px; }
+    .fila-buscar input { flex: 1; border: 1px solid #d4dae3; border-radius: 10px; padding: 12px 14px; font-size: 15px; font-family: inherit; min-width: 0; }
+    .btn { background: var(--granate-2); color: #fff; border: none; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .btn:hover { background: #991b1b; }
+    .btn:disabled { opacity: .55; cursor: wait; }
+    .opciones { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; }
+    .opciones label.tit { display: block; font-size: 11.5px; font-weight: 800; color: #334155; margin-bottom: 4px; }
+    .opciones select { border: 1px solid #d4dae3; border-radius: 8px; padding: 6px 8px; font-size: 13px; font-family: inherit; }
+    .opciones .radios { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+    .contador { font-size: 12px; font-weight: 700; color: var(--granate-2); margin-top: 10px; }
+
+    .estado { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: #fef3c7; border: 1px solid #fcd34d; font-size: 13px; display: none; }
+    .estado.error { background: #fee2e2; border-color: #fca5a5; }
+    .estado.ok { background: #dcfce7; border-color: #86efac; }
+
+    .barra-res { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin: 16px 0 10px; }
+    .barra-res b { font-size: 14px; }
+    .exporta { font-size: 12px; color: var(--gris); display: inline-flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .exporta button { background: #fff; border: 1px solid #d4dae3; border-radius: 7px; padding: 5px 10px; font-size: 12px; font-weight: 700; cursor: pointer; color: #334155; font-family: inherit; }
+    .exporta button:hover { border-color: var(--granate-2); color: var(--granate-2); }
+
+    .norma { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; margin-bottom: 9px; }
+    .norma .entidad { font-size: 10.5px; font-weight: 800; color: var(--granate-2); text-transform: uppercase; }
+    .norma .titulo { font-size: 14px; font-weight: 700; margin: 3px 0; }
+    .norma .titulo a { color: var(--tinta); text-decoration: none; }
+    .norma .titulo a:hover { color: var(--granate-2); text-decoration: underline; }
+    .norma .sumilla { font-size: 12.5px; color: #475569; margin-bottom: 7px; }
+    .norma .pie { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; font-size: 11.5px; color: var(--gris); }
+    .fuente-badge { background: #f1f5f9; color: #475569; border-radius: 20px; padding: 2px 9px; font-size: 10.5px; font-weight: 700; }
+    .norma .pie .enlaces { margin-left: auto; display: flex; gap: 10px; }
+    .norma .pie a { color: var(--granate-2); font-weight: 700; text-decoration: none; }
+    .vacio { text-align: center; color: #94a3b8; padding: 22px 10px; font-size: 13.5px; }
+
+    /* ---------- alertas ---------- */
+    .canales { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .canales a, .canales button { display: inline-flex; align-items: center; gap: 8px; border-radius: 10px; padding: 11px 18px; font-size: 13.5px; font-weight: 800; text-decoration: none; border: none; cursor: pointer; font-family: inherit; }
+    .canal-wa { background: #dcfce7; color: #166534; }
+    .canal-mail { background: #e0e7ff; color: #3730a3; }
+
+    /* ---------- premium ---------- */
+    .prem { background: linear-gradient(135deg, #1e293b, #0f172a); color: #e2e8f0; border-radius: 14px; padding: 20px; }
+    .prem h3 { color: var(--dorado); font-size: 16px; margin-bottom: 6px; }
+    .prem p { font-size: 13px; color: #94a3b8; margin-bottom: 12px; }
+    .prem ul { list-style: none; margin-bottom: 14px; }
+    .prem li { font-size: 13px; padding: 3px 0; }
+    .prem .contactos { display: flex; gap: 10px; flex-wrap: wrap; }
+    .prem .contactos a { display: inline-flex; align-items: center; gap: 7px; background: var(--dorado); color: #713f12; border-radius: 10px; padding: 11px 18px; font-size: 13.5px; font-weight: 800; text-decoration: none; }
+    .prem .contactos a.sec { background: transparent; color: var(--dorado); border: 2px solid var(--dorado); }
+
+    .cta-ext { background: #fff; border: 2px dashed var(--granate-2); border-radius: 14px; padding: 18px; text-align: center; }
+    .cta-ext p { font-size: 13.5px; color: #475569; margin-bottom: 12px; }
+    .cta-ext a { display: inline-block; background: var(--dorado); color: #713f12; border-radius: 10px; padding: 12px 24px; font-weight: 800; text-decoration: none; font-size: 14px; }
+
+    footer { background: var(--granate-1); color: rgba(255,255,255,.85); text-align: center; padding: 24px 16px; font-size: 12.5px; margin-top: 10px; }
+    footer a { color: var(--dorado); text-decoration: none; font-weight: 700; }
+
+    @media (max-width: 560px) {
+      .fila-buscar { flex-direction: column; }
+      .btn { width: 100%; }
+      .norma .pie .enlaces { margin-left: 0; }
+    }
+    @media print {
+      .cab, .menu-func, .fila-buscar, .opciones, .contador, .estado, .exporta, .canales, .prem, .cta-ext, footer, section:not(#buscador) { display: none !important; }
+      body { background: #fff; }
+      .norma { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="cab">
+    <div class="contenedor cab-fila">
+      <img src="logo.png" alt="Norma Watch Perú" />
+      <div>
+        <h1>🧪 Probar funcionalidades</h1>
+        <p>Las funciones gratuitas de Norma Watch Perú, en vivo desde su navegador</p>
+      </div>
+      <a class="volver" href="./">← Volver al inicio</a>
+    </div>
+  </header>
+
+  <div class="contenedor">
+
+    <!-- ============ MENÚ DE FUNCIONES ============ -->
+    <nav class="menu-func">
+      <a href="#buscador">🔎 Buscador Legal<small class="ok">GRATIS · pruébelo aquí</small></a>
+      <a href="#exportar">📄 Exportación<small class="ok">GRATIS · pruébelo aquí</small></a>
+      <a href="#alertas">📣 Alertas<small class="ok">GRATIS · pruébelo aquí</small></a>
+      <a href="#monitoreo">📡 Monitoreo<small class="ok">GRATIS · en la extensión</small></a>
+      <a href="#premium">⭐ Herramientas IA<small class="lock">🔒 previo contacto</small></a>
+    </nav>
+
+    <!-- ============ 🔎 BUSCADOR ============ -->
+    <section id="buscador">
+      <h2>🔎 Buscador Legal Perú — en vivo</h2>
+      <p class="desc">Busca normas, decretos y resoluciones reales en <b>gob.pe</b> (buscador oficial del Estado peruano). Es la misma función incluida gratis en la aplicación.</p>
+      <div class="panel">
+        <div class="fila-buscar">
+          <input id="txtBuscar" type="search" placeholder="Ej.: teletrabajo, contrataciones del Estado, licencia de conducir…" />
+          <button id="btnBuscar" class="btn">Buscar</button>
+        </div>
+        <div class="opciones">
+          <div>
+            <label class="tit">Periodo</label>
+            <div class="radios"><label><input type="radio" name="modo" value="dias" checked /> Últimos</label>
+              <select id="selDias">
+                <option value="30">30 días</option>
+                <option value="60">60 días</option>
+                <option value="90" selected>90 días</option>
+                <option value="365">1 año</option>
+              </select>
+            </div>
+            <div class="radios"><label><input type="radio" name="modo" value="anios" /> Años</label>
+              <select id="selDesde"></select><span>a</span><select id="selHasta"></select>
+            </div>
+          </div>
+          <div>
+            <label class="tit">Fuente</label>
+            <span style="font-size:13px">🏛️ gob.pe — buscador oficial del Estado</span>
+            <p style="font-size:11px;color:#94a3b8;max-width:280px;margin-top:4px">La aplicación instalada busca además directamente en el Diario Oficial El Peruano.</p>
+          </div>
+        </div>
+        <p class="contador" id="contador"></p>
+        <div class="estado" id="estado"></div>
+      </div>
+
+      <div id="resultados" hidden>
+        <div class="barra-res">
+          <b id="lblRes"></b>
+          <span class="exporta" id="zonaExporta">Exportar:
+            <button data-exp="pdf">PDF</button><button data-exp="word">Word</button><button data-exp="excel">Excel</button><button data-exp="md">MD</button><button data-exp="json">JSON</button>
+          </span>
+        </div>
+        <div id="lista"></div>
+      </div>
+    </section>
+
+    <!-- ============ 📄 EXPORTACIÓN ============ -->
+    <section id="exportar">
+      <h2>📄 Exportación profesional</h2>
+      <p class="desc">Cualquier resultado se guarda en <b>PDF, Word, Excel, Markdown o JSON</b>, con los enlaces oficiales de cada norma.</p>
+      <div class="panel">
+        <p style="font-size:13.5px">👆 Haga una búsqueda arriba y use los botones <b>Exportar</b> que aparecen junto a los resultados: el archivo se descarga al instante, igual que en la aplicación. El botón <b>PDF</b> abre el diálogo de impresión — elija «Guardar como PDF».</p>
+      </div>
+    </section>
+
+    <!-- ============ 📣 ALERTAS ============ -->
+    <section id="alertas">
+      <h2>📣 Alertas a su correo y WhatsApp</h2>
+      <p class="desc">La aplicación deja el mensaje con las normas detectadas <b>listo para enviar</b> — usted solo confirma. Pruebe cómo se ve con los resultados de su búsqueda:</p>
+      <div class="panel">
+        <div class="canales">
+          <button class="canal-wa" id="btnWa">📲 Probar alerta por WhatsApp</button>
+          <button class="canal-mail" id="btnMail">✉️ Probar alerta por correo</button>
+        </div>
+        <p style="font-size:12px;color:#94a3b8;margin-top:10px">Se abrirá WhatsApp o Gmail con el mensaje ya redactado usando los resultados de su búsqueda (haga una búsqueda primero). Nada se envía sin que usted lo confirme.</p>
+      </div>
+    </section>
+
+    <!-- ============ 📡 MONITOREO ============ -->
+    <section id="monitoreo">
+      <h2>📡 Monitoreo automático del Diario Oficial</h2>
+      <p class="desc">La aplicación instalada revisa <b>El Peruano</b> cada hora con sus palabras clave (SST, contrataciones, presupuesto, MEF…) y le avisa con una notificación — incluso con el navegador minimizado.</p>
+      <div class="cta-ext">
+        <p>Esta función trabaja en segundo plano, por eso vive dentro de la aplicación de Chrome (gratis). Instálela en 2 minutos:</p>
+        <a href="descargas/norma-watch-peru.zip" download>⬇️ Descargar la aplicación gratis</a>
+        <p style="margin:10px 0 0"><a href="./#instalacion" style="color:var(--granate-2);font-weight:700">Ver la guía de instalación →</a></p>
+      </div>
+    </section>
+
+    <!-- ============ ⭐ PREMIUM ============ -->
+    <section id="premium">
+      <h2>⭐ Herramientas con Inteligencia Artificial</h2>
+      <p class="desc">Bloqueadas 🔒 — se habilitan únicamente previo contacto con el autor.</p>
+      <div class="prem">
+        <h3>🔒 Funciones Premium</h3>
+        <ul>
+          <li>🔍 <b>Interpretador de Normas</b> — obligaciones, plazos, sanciones y riesgos en lenguaje claro</li>
+          <li>📅 <b>Línea de Tiempo Legal</b> — publicación, vigencia, hitos y modificaciones</li>
+          <li>⚔️ <b>Comparador Legal IA</b> — cambios artículo por artículo entre dos normas</li>
+          <li>📋 <b>Resumen ejecutivo diario</b> + análisis IA de búsquedas + búsquedas ilimitadas</li>
+        </ul>
+        <p>Solicite su código de activación personal indicando su nombre y el uso que le dará:</p>
+        <div class="contactos">
+          <a href="mailto:peru.labs.pe@gmail.com?subject=Solicito%20activaci%C3%B3n%20Premium%20de%20Norma%20Watch%20Per%C3%BA">✉️ peru.labs.pe@gmail.com</a>
+          <a class="sec" href="https://wa.me/51973337773?text=Hola%2C%20quiero%20activar%20Premium%20en%20Norma%20Watch%20Per%C3%BA" target="_blank" rel="noopener">📲 WhatsApp 973 337 773</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p><b>⚖️ Norma Watch Perú</b> · <a href="./">Inicio</a> · <a href="descargas/norma-watch-peru.zip">Descargar</a> · <a href="https://github.com/oprbguitar/Norma-watch" target="_blank" rel="noopener">GitHub</a></p>
+    <p>Autor: Pierre R. · <a href="mailto:peru.labs.pe@gmail.com">peru.labs.pe@gmail.com</a></p>
+  </footer>
+
+<script>
+// ============================================================
+// Demo en vivo del Buscador Legal Perú (fuente: gob.pe)
+// ============================================================
+const $ = (id) => document.getElementById(id);
+const LIMITE_DIA = 10;
+
+let resultadosBusqueda = [];
+
+// selector de años (2001 → actual)
+const anioActual = new Date().getFullYear();
+for (const sel of [$("selDesde"), $("selHasta")]) {
+  for (let a = anioActual; a >= 2001; a--) {
+    const op = document.createElement("option");
+    op.value = a; op.textContent = a;
+    sel.appendChild(op);
+  }
+}
+$("selDesde").value = anioActual - 1;
+$("selHasta").value = anioActual;
+
+// ---------- contador 10 búsquedas/día (igual que la app) ----------
+function contadorHoy() {
+  const hoy = new Date().toISOString().slice(0, 10);
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem("nwDemoBusquedas") || "{}"); } catch {}
+  return c.fecha === hoy ? c.n : 0;
+}
+function consumirBusqueda() {
+  const n = contadorHoy();
+  if (n >= LIMITE_DIA) return false;
+  localStorage.setItem("nwDemoBusquedas", JSON.stringify({ fecha: new Date().toISOString().slice(0, 10), n: n + 1 }));
+  return true;
+}
+function pintarContador() {
+  $("contador").textContent = `Búsquedas gratuitas restantes hoy: ${Math.max(0, LIMITE_DIA - contadorHoy())} de ${LIMITE_DIA}`;
+}
+pintarContador();
+
+function estado(msg, clase = "") {
+  const e = $("estado");
+  e.style.display = msg ? "block" : "none";
+  e.textContent = msg || "";
+  e.className = "estado " + clase;
+}
+
+const sinTags = (s) => { const d = document.createElement("div"); d.innerHTML = s || ""; return d.textContent.replace(/\s+/g, " ").trim(); };
+const fmtGob = (d) => `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+
+// ---------- conexión a gob.pe con puentes CORS de respaldo ----------
+async function fetchJson(url) {
+  const intentos = [
+    url,
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+    "https://corsproxy.io/?url=" + encodeURIComponent(url)
+  ];
+  let ultimoErr = null;
+  for (const u of intentos) {
+    try {
+      const resp = await fetch(u, { headers: { Accept: "application/json" } });
+      if (!resp.ok) { ultimoErr = new Error("HTTP " + resp.status); continue; }
+      return await resp.json();
+    } catch (e) { ultimoErr = e; }
+  }
+  throw ultimoErr || new Error("Sin conexión");
+}
+
+async function buscarGobPe(term, desde, hasta) {
+  const resultados = [];
+  for (const p of [1, 2, 3]) {
+    const url =
+      "https://www.gob.pe/busquedas.json?contenido%5B%5D=normas&term=" + encodeURIComponent(term) +
+      "&desde=" + fmtGob(desde) + "&hasta=" + fmtGob(hasta) + (p > 1 ? "&sheet=" + p : "");
+    const data = await fetchJson(url);
+    const items = data?.data?.attributes?.results || [];
+    for (const r of items) {
+      const href = (r.url || "").match(/href="([^"]+)"/)?.[1] || "";
+      resultados.push({
+        entidad: sinTags(r.content_sub_title_card) || "Entidad del Estado",
+        titulo: sinTags(r.url) || r.name_with_parent || "Norma",
+        sumilla: sinTags(r.content) || sinTags(r.subject) || "",
+        fecha: r.publication || "",
+        urlFicha: href ? "https://www.gob.pe" + href : "",
+        urlPdf: r.action_url || "",
+        fuente: "gob.pe"
+      });
+    }
+    if (items.length < 25) break;
+  }
+  return resultados;
+}
+
+// ---------- búsqueda ----------
+async function buscar() {
+  const term = $("txtBuscar").value.trim();
+  if (!term) return estado("Escriba un tema o norma para buscar (ej.: teletrabajo).", "error");
+  if (!consumirBusqueda()) {
+    estado("🔒 Alcanzó las " + LIMITE_DIA + " búsquedas gratuitas de hoy. La versión Premium incluye búsquedas ilimitadas — vea la sección ⭐ más abajo.", "error");
+    document.querySelector("#premium").scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  pintarContador();
+
+  const modoAnios = document.querySelector('input[name="modo"]:checked').value === "anios";
+  let desde, hasta;
+  if (modoAnios) {
+    let a1 = parseInt($("selDesde").value, 10), a2 = parseInt($("selHasta").value, 10);
+    if (a1 > a2) [a1, a2] = [a2, a1];
+    desde = new Date(a1, 0, 1);
+    hasta = new Date(Math.min(Date.now(), new Date(a2, 11, 31).getTime()));
+  } else {
+    hasta = new Date();
+    desde = new Date(Date.now() - parseInt($("selDias").value, 10) * 86400000);
+  }
+
+  const b = $("btnBuscar");
+  b.disabled = true;
+  estado("🔎 Buscando «" + term + "» en gob.pe…");
+  $("resultados").hidden = true;
+
+  try {
+    resultadosBusqueda = await buscarGobPe(term, desde, hasta);
+    render(term);
+    estado(`✅ ${resultadosBusqueda.length} resultado(s) para «${term}».`, "ok");
+  } catch (e) {
+    estado("⚠️ No se pudo consultar gob.pe desde su red (" + (e.message || "error") + "). Vuelva a intentarlo en unos segundos, o pruebe la búsqueda completa instalando la aplicación gratis.", "error");
+  } finally {
+    b.disabled = false;
+  }
+}
+$("btnBuscar").addEventListener("click", buscar);
+$("txtBuscar").addEventListener("keydown", (e) => { if (e.key === "Enter") buscar(); });
+
+function render(term) {
+  $("resultados").hidden = false;
+  $("lblRes").textContent = `📑 ${resultadosBusqueda.length} resultado(s) para «${term}»`;
+  const lista = $("lista");
+  lista.innerHTML = resultadosBusqueda.length ? "" : '<p class="vacio">Sin resultados. Pruebe con otras palabras o amplíe el periodo.</p>';
+  resultadosBusqueda.forEach((n) => {
+    const div = document.createElement("div");
+    div.className = "norma";
+    div.innerHTML = `
+      <div class="entidad"></div>
+      <div class="titulo"><a target="_blank" rel="noopener"></a></div>
+      <div class="sumilla"></div>
+      <div class="pie">
+        <span class="fuente-badge"></span>
+        <span>📅 ${n.fecha || "s/f"}</span>
+        <span class="enlaces">
+          ${n.urlFicha ? '<a class="ficha" target="_blank" rel="noopener">Ficha</a>' : ""}
+          ${n.urlPdf ? '<a class="pdf" target="_blank" rel="noopener">PDF</a>' : ""}
+        </span>
+      </div>`;
+    div.querySelector(".entidad").textContent = n.entidad;
+    const a = div.querySelector(".titulo a");
+    a.textContent = n.titulo;
+    a.href = n.urlFicha || n.urlPdf || "#";
+    div.querySelector(".sumilla").textContent = n.sumilla;
+    div.querySelector(".fuente-badge").textContent = "🏛️ " + n.fuente;
+    const fi = div.querySelector("a.ficha"); if (fi) fi.href = n.urlFicha;
+    const pd = div.querySelector("a.pdf"); if (pd) pd.href = n.urlPdf;
+    lista.appendChild(div);
+  });
+}
+
+// ============================================================
+// Exportación (misma lógica que la aplicación)
+// ============================================================
+const expEsc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const expFecha = () => new Date().toISOString().slice(0, 10);
+
+function dataset() {
+  return {
+    titulo: `Búsqueda: ${$("txtBuscar").value.trim()}`,
+    subtitulo: `Norma Watch Perú (demo web) · ${new Date().toLocaleString("es-PE")} · ${resultadosBusqueda.length} resultado(s)`,
+    normas: resultadosBusqueda
+  };
+}
+
+function descargar(nombre, mime, contenido) {
+  const url = URL.createObjectURL(new Blob([contenido], { type: mime }));
+  const a = document.createElement("a");
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+function expMarkdown(d) {
+  let md = `# ⚖️ ${d.titulo}\n\n_${d.subtitulo}_\n\n## 📑 Normas (${d.normas.length})\n\n`;
+  d.normas.forEach((n) => {
+    md += `### ${n.titulo}\n\n- **Entidad:** ${n.entidad}\n- **Fecha:** ${n.fecha || "s/f"}\n- **Fuente:** ${n.fuente}\n`;
+    if (n.sumilla) md += `- **Sumilla:** ${n.sumilla}\n`;
+    if (n.urlFicha) md += `- **Ficha:** ${n.urlFicha}\n`;
+    if (n.urlPdf) md += `- **PDF oficial:** ${n.urlPdf}\n`;
+    md += "\n";
+  });
+  md += `\n---\nGenerado por Norma Watch Perú · ${new Date().toLocaleString("es-PE")}\n`;
+  return md;
+}
+
+function expHtmlCuerpo(d) {
+  let h = `<h1 style="color:#b91c1c">⚖️ ${expEsc(d.titulo)}</h1><p><i>${expEsc(d.subtitulo)}</i></p>`;
+  h += `<h2 style="color:#4f46e5">📑 Normas (${d.normas.length})</h2>`;
+  h += `<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;font-size:12px">
+    <tr style="background:#b91c1c;color:#fff"><th>Entidad</th><th>Norma</th><th>Sumilla</th><th>Fecha</th><th>Fuente</th><th>Enlaces</th></tr>`;
+  d.normas.forEach((n) => {
+    h += `<tr><td>${expEsc(n.entidad)}</td><td><b>${expEsc(n.titulo)}</b></td><td>${expEsc(n.sumilla)}</td><td>${expEsc(n.fecha || "s/f")}</td><td>${expEsc(n.fuente)}</td><td>${n.urlFicha ? `<a href="${expEsc(n.urlFicha)}">Ficha</a>` : ""} ${n.urlPdf ? `<a href="${expEsc(n.urlPdf)}">PDF</a>` : ""}</td></tr>`;
+  });
+  h += `</table><p style="font-size:10px;color:#888">Generado por Norma Watch Perú · ${new Date().toLocaleString("es-PE")}</p>`;
+  return h;
+}
+
+document.querySelectorAll("[data-exp]").forEach((b) =>
+  b.addEventListener("click", () => {
+    if (!resultadosBusqueda.length) { estado("Primero haga una búsqueda para poder exportar.", "error"); return; }
+    const d = dataset();
+    const base = `NormaWatch-${d.titulo.replace(/[^\wáéíóúñÁÉÍÓÚÑ -]/g, "").replace(/\s+/g, "_").slice(0, 50)}-${expFecha()}`;
+    const f = b.dataset.exp;
+    if (f === "json") descargar(base + ".json", "application/json", JSON.stringify(d, null, 2));
+    else if (f === "md") descargar(base + ".md", "text/markdown", expMarkdown(d));
+    else if (f === "word") descargar(base + ".doc", "application/msword", "﻿<html><head><meta charset='utf-8'></head><body style='font-family:Calibri,Arial,sans-serif'>" + expHtmlCuerpo(d) + "</body></html>");
+    else if (f === "excel") descargar(base + ".xls", "application/vnd.ms-excel", "﻿<html><head><meta charset='utf-8'></head><body>" + expHtmlCuerpo(d) + "</body></html>");
+    else if (f === "pdf") window.print();
+  })
+);
+
+// ============================================================
+// Alertas de prueba (WhatsApp / Gmail)
+// ============================================================
+function textoAlerta() {
+  if (!resultadosBusqueda.length) return null;
+  const lineas = resultadosBusqueda.slice(0, 5).map(
+    (n) => `• ${n.titulo} (${n.entidad}, ${n.fecha || "s/f"})\n${n.urlFicha}`
+  );
+  let t = `⚖️ Norma Watch Perú — ${resultadosBusqueda.length} norma(s) encontrada(s) para «${$("txtBuscar").value.trim()}»:\n\n${lineas.join("\n\n")}`;
+  if (resultadosBusqueda.length > 5) t += `\n\n…y ${resultadosBusqueda.length - 5} más.`;
+  return t;
+}
+
+$("btnWa").addEventListener("click", () => {
+  const t = textoAlerta();
+  if (!t) { estado("Primero haga una búsqueda para generar la alerta de prueba.", "error"); document.querySelector("#buscador").scrollIntoView({ behavior: "smooth" }); return; }
+  window.open("https://wa.me/?text=" + encodeURIComponent(t.slice(0, 3500)), "_blank");
+});
+
+$("btnMail").addEventListener("click", () => {
+  const t = textoAlerta();
+  if (!t) { estado("Primero haga una búsqueda para generar la alerta de prueba.", "error"); document.querySelector("#buscador").scrollIntoView({ behavior: "smooth" }); return; }
+  const asunto = "Norma Watch Perú — Normas encontradas";
+  window.open("https://mail.google.com/mail/?view=cm&fs=1&su=" + encodeURIComponent(asunto) + "&body=" + encodeURIComponent(t.slice(0, 6000)), "_blank");
+});
+</script>
+</body>
+</html>

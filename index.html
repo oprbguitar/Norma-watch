@@ -50,7 +50,9 @@
     section p.intro { text-align: center; color: var(--gris); max-width: 680px; margin: 0 auto 32px; font-size: 15px; }
 
     .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
-    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 22px; position: relative; }
+    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 22px; position: relative; display: block; color: inherit; text-decoration: none; }
+    a.tarjeta:hover { border-color: var(--granate-2); box-shadow: 0 4px 16px rgba(185,28,28,.12); }
+    .probar-chip { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 800; color: var(--granate-2); }
     .tarjeta .ico { font-size: 32px; display: block; margin-bottom: 10px; }
     .tarjeta h3 { font-size: 16.5px; margin-bottom: 6px; }
     .tarjeta p { font-size: 13.5px; color: var(--gris); }
@@ -102,6 +104,7 @@
       <span class="cinta">✅ Funciona al instante: sin registro, sin cuenta y sin claves</span>
       <div class="botones">
         <a class="btn btn-dorado" href="descargas/norma-watch-peru.zip" download>⬇️ Descargar la extensión (ZIP)</a>
+        <a class="btn btn-dorado" href="probar.html">🧪 Probar funcionalidades en línea</a>
         <a class="btn btn-borde" href="https://github.com/oprbguitar/Norma-watch" target="_blank" rel="noopener">Ver en GitHub</a>
         <a class="btn btn-borde" href="#instalacion">📘 Cómo instalar</a>
       </div>
@@ -115,30 +118,34 @@
       <h2>Todo lo que hace por usted</h2>
       <p class="intro">Pensada para abogados, administradores, consultores, estudios legales y servidores públicos — sin necesidad de conocimientos técnicos.</p>
       <div class="tarjetas">
-        <div class="tarjeta">
+        <a class="tarjeta" href="probar.html#buscador">
           <span class="sello gratis">GRATIS</span>
           <span class="ico">🔎</span>
           <h3>Buscador Legal Perú</h3>
           <p>Busque normas, decretos y resoluciones en El Peruano y gob.pe, por últimos días o por rango de años. 10 búsquedas diarias incluidas.</p>
-        </div>
-        <div class="tarjeta">
+          <span class="probar-chip">🧪 Probar en línea →</span>
+        </a>
+        <a class="tarjeta" href="probar.html#monitoreo">
           <span class="sello gratis">GRATIS</span>
           <span class="ico">📡</span>
           <h3>Monitoreo automático</h3>
           <p>Vigila El Peruano cada hora con sus palabras clave (SST, contrataciones, presupuesto, MEF…) y le avisa con una notificación.</p>
-        </div>
-        <div class="tarjeta">
+          <span class="probar-chip">🧪 Ver cómo funciona →</span>
+        </a>
+        <a class="tarjeta" href="probar.html#alertas">
           <span class="sello gratis">GRATIS</span>
           <span class="ico">📣</span>
           <h3>Alertas a su correo y WhatsApp</h3>
           <p>Deja el mensaje listo en Gmail o WhatsApp con las normas detectadas; usted solo confirma el envío.</p>
-        </div>
-        <div class="tarjeta">
+          <span class="probar-chip">🧪 Probar en línea →</span>
+        </a>
+        <a class="tarjeta" href="probar.html#exportar">
           <span class="sello gratis">GRATIS</span>
           <span class="ico">📄</span>
           <h3>Exportación profesional</h3>
           <p>Guarde cualquier resultado en PDF, Word, Excel, Markdown o JSON, con enlaces a la ficha oficial y al PDF de cada norma.</p>
-        </div>
+          <span class="probar-chip">🧪 Probar en línea →</span>
+        </a>
       </div>
     </div>
   </section>
