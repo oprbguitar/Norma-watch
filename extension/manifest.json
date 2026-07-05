@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Norma Watch Perú",
+  "version": "2.0.0",
+  "description": "Suite legal: monitorea El Peruano y gob.pe, busca normas y jurisprudencia, interpreta normas con IA, líneas de tiempo, comparador legal y exportación PDF/Word/Excel/Markdown/JSON.",
+  "author": "Pierre R. — peru.labs.pe@gmail.com",
+  "permissions": ["alarms", "storage", "notifications", "tabs", "downloads", "scripting", "activeTab"],
+  "host_permissions": [
+    "https://diariooficial.elperuano.pe/*",
+    "https://busquedas.elperuano.pe/*",
+    "https://epdoc2.elperuano.pe/*",
+    "https://www.gob.pe/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://openrouter.ai/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Norma Watch Perú",
+    "default_icon": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" }
+  },
+  "options_page": "options.html",
+  "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" }
+}

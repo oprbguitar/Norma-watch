@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Norma Watch Perú</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <div class="marca">
+      <span class="logo">⚖️</span>
+      <div>
+        <h1>Norma Watch Perú</h1>
+        <p id="subtitulo">Tu asistente legal del Diario Oficial y gob.pe</p>
+      </div>
+    </div>
+    <div class="cab-der">
+      <span id="chipLicencia" class="chip-lic">Versión gratuita</span>
+      <button id="btnOpciones" class="icono" title="Configuración (API keys, palabras clave, alertas)">⚙️</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab activa" data-tab="buscar">🔎 Buscar normas</button>
+    <button class="tab" data-tab="monitoreo">📡 Monitoreo</button>
+    <button class="tab" data-tab="herramientas">🧰 Herramientas IA</button>
+    <button class="tab" data-tab="guia">📘 Guía</button>
+  </nav>
+
+  <div id="estado" class="estado" hidden></div>
+
+  <main>
+    <!-- ============ 🔎 BUSCAR (Legal Search Perú) ============ -->
+    <section id="tab-buscar">
+      <div class="panel-busqueda">
+        <label class="etiqueta">¿Qué norma o tema desea buscar?</label>
+        <div class="fila-busqueda">
+          <input id="txtBuscar" type="search" placeholder="Ej.: contrataciones del Estado, licencia de conducir, teletrabajo…" />
+          <button id="btnBuscarNorma" class="primario">Buscar</button>
+        </div>
+
+        <div class="fila-opciones">
+          <div class="grupo">
+            <label class="etiqueta">Periodo de búsqueda</label>
+            <div class="radios">
+              <label><input type="radio" name="modoRango" value="dias" checked /> Últimos días</label>
+              <select id="selDias">
+                <option value="7">7 días</option>
+                <option value="15">15 días</option>
+                <option value="30" selected>30 días</option>
+                <option value="60">60 días</option>
+                <option value="90">90 días</option>
+              </select>
+            </div>
+            <div class="radios">
+              <label><input type="radio" name="modoRango" value="anios" /> Rango de años</label>
+              <select id="selAnioDesde"></select>
+              <span>a</span>
+              <select id="selAnioHasta"></select>
+            </div>
+          </div>
+          <div class="grupo">
+            <label class="etiqueta">Fuente</label>
+            <select id="selFuente">
+              <option value="ambas" selected>El Peruano + gob.pe (recomendado)</option>
+              <option value="gobpe">Solo gob.pe (todas las entidades)</option>
+              <option value="elperuano">Solo El Peruano (diario oficial)</option>
+            </select>
+            <p class="nota" id="notaFuente">El rango de años usa gob.pe (El Peruano solo permite días recientes).</p>
+          </div>
+        </div>
+        <p class="contador" id="contadorBusquedas"></p>
+      </div>
+
+      <div id="resBusqueda" hidden>
+        <div class="barra-resultados">
+          <span id="lblResultados"></span>
+          <div class="btns-mini">
+            <button id="btnAnalisisIA" class="ia">✨ Análisis IA de resultados</button>
+            <span class="exporta">Exportar:
+              <button data-exp="pdf">PDF</button><button data-exp="word">Word</button><button data-exp="excel">Excel</button><button data-exp="md">MD</button><button data-exp="json">JSON</button>
+            </span>
+          </div>
+        </div>
+        <div id="panelAnalisis" class="panel-ia" hidden>
+          <h3>✨ Análisis y contraste de resultados</h3>
+          <pre id="txtAnalisis"></pre>
+        </div>
+        <div id="listaBusqueda"></div>
+      </div>
+    </section>
+
+    <!-- ============ 📡 MONITOREO ============ -->
+    <section id="tab-monitoreo" hidden>
+      <div class="acciones">
+        <button id="btnRevisar" class="primario">🔄 Revisar El Peruano ahora</button>
+        <button id="btnResumen" class="ia">✨ Resumen IA del día</button>
+        <span class="exporta">Exportar detectadas:
+          <button data-expmon="pdf">PDF</button><button data-expmon="word">Word</button><button data-expmon="excel">Excel</button><button data-expmon="md">MD</button><button data-expmon="json">JSON</button>
+        </span>
+      </div>
+      <p class="nota" id="notaMonitoreo"></p>
+      <input id="filtro" type="search" placeholder="Filtrar por texto, entidad o palabra clave…" />
+      <div class="subtabs">
+        <button class="subtab activa" data-vista="normas">Normas detectadas</button>
+        <button class="subtab" data-vista="resumenes">Resúmenes diarios</button>
+      </div>
+      <div id="vistaNormas">
+        <p id="vacioNormas" class="vacio">Aún no hay normas detectadas.<br />Pulsa <b>Revisar El Peruano ahora</b> para el primer barrido.</p>
+        <div id="listaNormas"></div>
+      </div>
+      <div id="vistaResumenes" hidden>
+        <p id="vacioResumenes" class="vacio">Todavía no hay resúmenes.<br />Pulsa <b>✨ Resumen IA del día</b> para generar uno.</p>
+        <div id="listaResumenes"></div>
+      </div>
+    </section>
+
+    <!-- ============ 🧰 HERRAMIENTAS IA ============ -->
+    <section id="tab-herramientas" hidden>
+      <div id="menuHerramientas" class="cards">
+        <button class="card" data-herr="interprete">
+          <span class="card-icono">🔍</span>
+          <span class="card-cuerpo"><b>Interpretador de Normas</b><small>Explica en lenguaje claro: obligaciones, a quién aplica, plazos, sanciones y riesgos de cualquier norma.</small></span>
+          <span class="candado" data-cand="interprete">🔒 Premium</span>
+        </button>
+        <button class="card" data-herr="timeline">
+          <span class="card-icono">📅</span>
+          <span class="card-cuerpo"><b>Línea de Tiempo Legal</b><small>Convierte una norma, expediente o resolución en una línea de tiempo con fechas, hitos, modificaciones y vigencia.</small></span>
+          <span class="candado" data-cand="timeline">🔒 Premium</span>
+        </button>
+        <button class="card" data-herr="comparador">
+          <span class="card-icono">⚔️</span>
+          <span class="card-cuerpo"><b>Comparador Legal IA</b><small>Compara dos normas o versiones de una misma norma y explica los cambios relevantes artículo por artículo.</small></span>
+          <span class="candado" data-cand="comparador">🔒 Premium</span>
+        </button>
+        <button class="card" data-herr="buscarinfo">
+          <span class="card-icono">🔎</span>
+          <span class="card-cuerpo"><b>Buscador Legal Perú</b><small>Busca normas, decretos y resoluciones en El Peruano y gob.pe. Gratis (10 búsquedas/día). El análisis IA de resultados es Premium.</small></span>
+          <span class="candado libre">✅ Incluido</span>
+        </button>
+      </div>
+
+      <!-- vista de herramienta activa -->
+      <div id="vistaHerramienta" hidden>
+        <div class="herr-cab">
+          <button id="btnVolverHerr" class="mini">← Volver</button>
+          <h2 id="tituloHerr"></h2>
+        </div>
+
+        <div id="herr-interprete" hidden>
+          <p class="nota">Pegue el texto de la norma <b>o</b> use el botón para leer la norma abierta en su pestaña actual.</p>
+          <button id="btnLeerPestana" class="mini">📄 Leer norma de la pestaña actual</button>
+          <textarea id="txtInterprete" placeholder="Pegue aquí el texto de la norma (o parte de ella)…"></textarea>
+          <button id="btnInterpretar" class="ia">✨ Interpretar norma</button>
+        </div>
+
+        <div id="herr-timeline" hidden>
+          <p class="nota">Pegue el texto de la norma, expediente o resolución <b>o</b> léalo desde la pestaña actual.</p>
+          <button id="btnLeerPestanaTl" class="mini">📄 Leer desde la pestaña actual</button>
+          <textarea id="txtTimeline" placeholder="Pegue aquí el texto…"></textarea>
+          <button id="btnGenerarTimeline" class="ia">✨ Construir línea de tiempo</button>
+        </div>
+
+        <div id="herr-comparador" hidden>
+          <p class="nota">Pegue las dos normas (o dos versiones de la misma norma) que desea comparar.</p>
+          <div class="dos-columnas">
+            <textarea id="txtNormaA" placeholder="Norma / versión A…"></textarea>
+            <textarea id="txtNormaB" placeholder="Norma / versión B…"></textarea>
+          </div>
+          <button id="btnComparar" class="ia">✨ Comparar artículo por artículo</button>
+        </div>
+
+        <div id="resultadoHerr" class="panel-ia" hidden>
+          <div class="barra-resultados">
+            <h3 id="tituloResultadoHerr"></h3>
+            <span class="exporta">Exportar:
+              <button data-expherr="pdf">PDF</button><button data-expherr="word">Word</button><button data-expherr="md">MD</button><button data-expherr="json">JSON</button>
+            </span>
+          </div>
+          <div id="lineaTiempo" hidden></div>
+          <pre id="txtResultadoHerr"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 📘 GUÍA ============ -->
+    <section id="tab-guia" hidden>
+      <div class="guia">
+        <h2>📘 Guía rápida (en lenguaje sencillo)</h2>
+        <div class="paso"><b>🔎 Buscar normas.</b> Escriba el tema (ej. “teletrabajo”) y pulse Buscar. Puede elegir buscar en los últimos días o por rango de años. Cada resultado muestra la entidad, la fecha, qué resuelve o autoriza, y los enlaces a la ficha oficial y al PDF. La versión gratuita permite <b>10 búsquedas al día</b>.</div>
+        <div class="paso"><b>📡 Monitoreo automático.</b> La extensión revisa El Peruano sola, cada hora, buscando sus palabras clave (SST, contrataciones, presupuesto, etc.). Cuando encuentra algo, le avisa con una notificación. Las palabras clave se cambian en ⚙️ Configuración.</div>
+        <div class="paso"><b>✨ Herramientas con Inteligencia Artificial (Premium ⭐).</b><br>• <b>Interpretador de Normas:</b> explica una norma en palabras simples — qué obliga, a quién, plazos, sanciones y riesgos.<br>• <b>Línea de Tiempo Legal:</b> arma un calendario de la norma: cuándo se publicó, cuándo entra en vigencia, modificaciones e hitos.<br>• <b>Comparador Legal:</b> muestra qué cambió entre dos normas, artículo por artículo.<br>• <b>Análisis IA de búsquedas:</b> compara y contrasta los resultados y le dice cuál es relevante para su caso.</div>
+        <div class="paso"><b>⭐ ¿Cómo activo Premium?</b> Pulse cualquier función con el candado 🔒 y siga las instrucciones: se activa con un código de licencia. Para obtenerlo, contacte al autor: <a href="mailto:peru.labs.pe@gmail.com">peru.labs.pe@gmail.com</a> o WhatsApp <a href="https://wa.me/51973337773" target="_blank">973 337 773</a>.</div>
+        <div class="paso"><b>📄 Exportar.</b> Todos los resultados se pueden guardar en <b>PDF, Word, Excel, Markdown o JSON</b> con los botones "Exportar". El PDF se genera con el botón 🖨️ del reporte (Guardar como PDF).</div>
+        <div class="paso"><b>⚙️ Configuración.</b> En el engranaje puede: cambiar las palabras clave, poner <b>su</b> correo y <b>su</b> WhatsApp para las alertas, elegir el proveedor de IA (Gemini, OpenAI, Claude u OpenRouter), pegar su API key y elegir el modelo.</div>
+        <div class="paso"><b>🛠️ Instalación en otra computadora.</b> Descargue la extensión desde <a href="https://github.com/oprbguitar/Norma-watch" target="_blank">github.com/oprbguitar/Norma-watch</a>, abra <code>chrome://extensions</code>, active "Modo de desarrollador" y pulse "Cargar extensión sin empaquetar". Guía completa en <code>INSTALACION.md</code> del repositorio.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ MODAL PREMIUM ============ -->
+  <div id="modalPremium" class="modal" hidden>
+    <div class="modal-caja">
+      <h2>⭐ Función Premium</h2>
+      <p id="modalDetalle">Esta herramienta usa Inteligencia Artificial y requiere una licencia Premium.</p>
+      <ul class="beneficios">
+        <li>✨ Interpretador de Normas, Línea de Tiempo y Comparador Legal</li>
+        <li>✨ Análisis IA y contraste de resultados de búsqueda</li>
+        <li>✨ Resumen ejecutivo diario con IA</li>
+        <li>🔎 Búsquedas ilimitadas (la versión gratuita permite 10/día)</li>
+      </ul>
+      <label class="etiqueta">¿Ya tiene un código? Actívelo aquí:</label>
+      <div class="fila-busqueda">
+        <input id="txtCodigo" type="text" placeholder="NW-AAAAMM-XXXXXXXXXXXX" />
+        <button id="btnActivar" class="primario">Desbloquear</button>
+      </div>
+      <p id="msgLicencia" class="nota"></p>
+      <div class="contacto">
+        <p><b>¿Aún no tiene código?</b> Solicítelo al autor:</p>
+        <a href="mailto:peru.labs.pe@gmail.com?subject=Solicito%20licencia%20Premium%20Norma%20Watch%20Per%C3%BA" target="_blank">✉️ peru.labs.pe@gmail.com</a>
+        <a href="https://wa.me/51973337773?text=Hola%2C%20quiero%20la%20licencia%20Premium%20de%20Norma%20Watch%20Per%C3%BA" target="_blank">📲 WhatsApp 973 337 773</a>
+      </div>
+      <button id="btnCerrarModal" class="mini">Cerrar</button>
+    </div>
+  </div>
+
+  <footer id="pie">Autor: Pierre R. · peru.labs.pe@gmail.com</footer>
+
+  <script src="licencia.js"></script>
+  <script src="ia.js"></script>
+  <script src="exportar.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

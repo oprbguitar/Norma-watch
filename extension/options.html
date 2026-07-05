@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Configuración — Norma Watch Perú</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #f4f6f9;
+      color: #1c2430;
+      display: flex;
+      justify-content: center;
+      padding: 30px 16px;
+    }
+    .tarjeta {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 28px;
+      width: 100%;
+      max-width: 680px;
+    }
+    h1 { font-size: 20px; color: #b91c1c; margin-bottom: 4px; }
+    .sub { font-size: 13px; color: #64748b; margin-bottom: 22px; }
+    fieldset { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 18px; }
+    legend { font-size: 13px; font-weight: 700; color: #4f46e5; padding: 0 6px; }
+    label { display: block; font-size: 12px; font-weight: 600; margin: 10px 0 4px; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d4dae3;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .ayuda { font-size: 11px; color: #94a3b8; margin-top: 3px; line-height: 1.5; }
+    .ayuda a { color: #4f46e5; }
+    .fila { display: flex; gap: 14px; }
+    .fila > div { flex: 1; }
+    .check { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; }
+    .check input { width: 16px; height: 16px; }
+    /* chips de palabras clave */
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; min-height: 34px; padding: 6px; border: 1px dashed #d4dae3; border-radius: 8px; }
+    .chip-kw {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #eef2ff; color: #4338ca; border-radius: 20px;
+      padding: 4px 10px; font-size: 12px; font-weight: 700;
+    }
+    .chip-kw button { background: none; border: none; color: #4338ca; font-weight: 700; cursor: pointer; font-size: 13px; }
+    .chip-kw button:hover { color: #dc2626; }
+    .fila-agregar { display: flex; gap: 8px; }
+    .fila-agregar input { flex: 1; }
+    .btn { background: #b91c1c; color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .btn:hover { background: #991b1b; }
+    .btn.sec { background: #475569; }
+    .btn.mini { padding: 8px 14px; font-size: 12px; }
+    #estado { margin-left: 12px; font-size: 13px; font-weight: 600; }
+    #estado.ok { color: #16a34a; }
+    #estado.error { color: #dc2626; }
+    .lic-estado { font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 8px; background: #f1f5f9; display: inline-block; margin-bottom: 8px; }
+    .lic-estado.premium { background: #fef3c7; color: #92400e; }
+    footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="tarjeta">
+    <h1>⚙️ Norma Watch Perú — Configuración</h1>
+    <p class="sub">Todo se guarda solo en su navegador. Configure sus palabras clave, su IA y sus canales de alerta.</p>
+
+    <fieldset>
+      <legend>🏷️ Palabras clave que se vigilan</legend>
+      <p class="ayuda">Estas palabras se buscan automáticamente en El Peruano. Haga clic en la ✕ para quitar una, o agregue las suyas abajo. "IA", "SST" y "MEF" también detectan sus formas largas ("inteligencia artificial", etc.).</p>
+      <div id="chipsKeywords" class="chips"></div>
+      <div class="fila-agregar">
+        <input id="nuevaKeyword" type="text" placeholder="Escriba una palabra clave y pulse Agregar (ej.: minería, tributario, salud)…" />
+        <button id="btnAgregarKw" class="btn mini">＋ Agregar</button>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>🤖 Inteligencia Artificial — Gestor de API keys</legend>
+      <label for="selProveedor">Proveedor de IA activo</label>
+      <select id="selProveedor"></select>
+      <label for="txtApiKey">API key de <span id="lblProveedor"></span></label>
+      <input id="txtApiKey" type="password" autocomplete="off" />
+      <p class="ayuda">Consiga su key gratis/de pago en: <a id="lnkKey" href="#" target="_blank"></a>. Puede guardar una key por cada proveedor y cambiar entre ellos cuando quiera.</p>
+      <label for="selModelo">Modelo de IA</label>
+      <select id="selModelo"></select>
+      <input id="txtModeloOtro" type="text" placeholder="Escriba el nombre exacto del modelo…" style="display:none; margin-top:6px" />
+      <p class="ayuda">El primero de la lista es el recomendado (rápido y económico).</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>📡 Monitoreo automático</legend>
+      <div class="fila">
+        <div>
+          <label for="frecuenciaMin">Revisar El Peruano cada (minutos)</label>
+          <input id="frecuenciaMin" type="number" min="15" max="720" />
+        </div>
+        <div>
+          <label for="diasRetro">Días hacia atrás por barrido</label>
+          <input id="diasRetro" type="number" min="1" max="15" />
+        </div>
+        <div>
+          <label for="horaResumen">Hora del resumen diario</label>
+          <select id="horaResumen"></select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>📣 Sus canales de alerta</legend>
+      <div class="fila">
+        <div>
+          <label for="email">Su correo (para recibir las alertas)</label>
+          <input id="email" type="email" placeholder="sucorreo@ejemplo.com" />
+        </div>
+        <div>
+          <label for="whatsapp">Su WhatsApp (9 dígitos o con código de país)</label>
+          <input id="whatsapp" type="text" placeholder="9XXXXXXXX" />
+        </div>
+      </div>
+      <div class="check">
+        <input id="abrirCorreoAuto" type="checkbox" />
+        <label for="abrirCorreoAuto" style="margin:0">Al generar el resumen diario, abrir Gmail con el correo ya redactado (solo falta pulsar Enviar)</label>
+      </div>
+      <p class="ayuda">Las extensiones no pueden enviar correos ni WhatsApp por sí solas: Norma Watch deja el mensaje listo (Gmail / wa.me) y usted solo confirma el envío.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>⭐ Licencia Premium</legend>
+      <span id="licEstado" class="lic-estado">Cargando…</span>
+      <div class="fila-agregar">
+        <input id="txtCodigo" type="text" placeholder="NW-AAAAMM-XXXXXXXXXXXX" style="text-transform:uppercase" />
+        <button id="btnActivar" class="btn mini sec">Activar</button>
+      </div>
+      <p id="msgLicencia" class="ayuda"></p>
+      <p class="ayuda">¿Necesita un código? Contacte al autor: <a href="mailto:peru.labs.pe@gmail.com">peru.labs.pe@gmail.com</a> · <a href="https://wa.me/51973337773" target="_blank">WhatsApp 973 337 773</a></p>
+    </fieldset>
+
+    <button id="btnGuardar" class="btn">💾 Guardar configuración</button>
+    <span id="estado"></span>
+
+    <footer>Norma Watch Perú v2.0 · Autor: Pierre R. · peru.labs.pe@gmail.com</footer>
+  </div>
+  <script src="licencia.js"></script>
+  <script src="ia.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
