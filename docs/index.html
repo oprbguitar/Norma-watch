@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Norma Watch Perú — Su asistente legal del Diario Oficial</title>
+  <meta name="description" content="Norma Watch Perú: monitorea El Peruano y gob.pe, busca normas y jurisprudencia, recibe alertas y exporta a PDF, Word, Excel y más. Gratis, sin registro y sin claves." />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta property="og:title" content="Norma Watch Perú" />
+  <meta property="og:description" content="Monitorea, busca y analiza normas del Estado peruano desde su navegador." />
+  <meta property="og:image" content="logo.png" />
+  <style>
+    :root {
+      --granate-1: #7f1d1d;
+      --granate-2: #b91c1c;
+      --dorado: #fbbf24;
+      --dorado-osc: #b45309;
+      --tinta: #1c2430;
+      --gris: #64748b;
+      --fondo: #f4f6f9;
+      --borde: #e2e8f0;
+      --indigo: #4f46e5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--tinta); background: var(--fondo); line-height: 1.6; }
+    img { max-width: 100%; }
+    a { color: var(--granate-2); }
+
+    .contenedor { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+    /* ---------- hero ---------- */
+    .hero { background: linear-gradient(135deg, var(--granate-1), var(--granate-2)); color: #fff; padding: 56px 0 64px; text-align: center; }
+    .hero img.logo { width: 110px; height: 110px; border-radius: 26px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .hero h1 { font-size: clamp(28px, 5vw, 44px); margin: 18px 0 8px; }
+    .hero p.lema { font-size: clamp(15px, 2.5vw, 19px); opacity: .92; max-width: 640px; margin: 0 auto 10px; }
+    .cinta { display: inline-block; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); border-radius: 30px; padding: 6px 18px; font-size: 13.5px; font-weight: 600; margin-top: 6px; }
+    .botones { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px; }
+    .btn { display: inline-block; border-radius: 12px; padding: 14px 28px; font-size: 15.5px; font-weight: 700; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-dorado { background: var(--dorado); color: #713f12; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+    .btn-borde { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.65); }
+    .hero small { display: block; margin-top: 14px; font-size: 12.5px; opacity: .8; }
+
+    /* ---------- secciones ---------- */
+    section { padding: 52px 0; }
+    section h2 { font-size: clamp(22px, 3.5vw, 30px); color: var(--granate-2); text-align: center; margin-bottom: 8px; }
+    section p.intro { text-align: center; color: var(--gris); max-width: 680px; margin: 0 auto 32px; font-size: 15px; }
+
+    .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 22px; position: relative; }
+    .tarjeta .ico { font-size: 32px; display: block; margin-bottom: 10px; }
+    .tarjeta h3 { font-size: 16.5px; margin-bottom: 6px; }
+    .tarjeta p { font-size: 13.5px; color: var(--gris); }
+    .sello { position: absolute; top: 14px; right: 14px; font-size: 11px; font-weight: 800; border-radius: 20px; padding: 4px 12px; }
+    .sello.gratis { background: #dcfce7; color: #166534; }
+    .sello.premium { background: #fef3c7; color: #92400e; }
+
+    /* ---------- premium ---------- */
+    .zona-premium { background: linear-gradient(135deg, #1e293b, #0f172a); color: #e2e8f0; }
+    .zona-premium h2 { color: var(--dorado); }
+    .zona-premium p.intro { color: #94a3b8; }
+    .zona-premium .tarjeta { background: rgba(255,255,255,.05); border: 1px solid rgba(251,191,36,.25); }
+    .zona-premium .tarjeta h3 { color: #fff; }
+    .zona-premium .tarjeta p { color: #94a3b8; }
+    .candado-grande { text-align: center; margin-top: 34px; background: rgba(251,191,36,.08); border: 1px dashed rgba(251,191,36,.45); border-radius: 18px; padding: 28px 22px; }
+    .candado-grande b { color: var(--dorado); font-size: 17px; display: block; margin-bottom: 6px; }
+    .candado-grande p { font-size: 14px; color: #cbd5e1; max-width: 560px; margin: 0 auto 18px; }
+    .contactos { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .contactos a { display: inline-flex; align-items: center; gap: 8px; background: var(--dorado); color: #713f12; border-radius: 12px; padding: 12px 22px; font-size: 14.5px; font-weight: 800; text-decoration: none; }
+    .contactos a.sec { background: transparent; color: var(--dorado); border: 2px solid var(--dorado); }
+
+    /* ---------- instalación ---------- */
+    .pasos { max-width: 720px; margin: 0 auto; counter-reset: paso; }
+    .paso { background: #fff; border: 1px solid var(--borde); border-left: 5px solid var(--indigo); border-radius: 12px; padding: 18px 20px 18px 64px; margin-bottom: 14px; position: relative; font-size: 14.5px; }
+    .paso::before { counter-increment: paso; content: counter(paso); position: absolute; left: 18px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border-radius: 50%; background: var(--indigo); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .paso code { background: #f1f5f9; border-radius: 5px; padding: 2px 7px; font-size: 12.5px; }
+    .nota-instal { text-align: center; font-size: 13px; color: var(--gris); margin-top: 18px; }
+
+    /* ---------- footer ---------- */
+    footer { background: var(--granate-1); color: rgba(255,255,255,.85); text-align: center; padding: 30px 20px; font-size: 13px; }
+    footer a { color: var(--dorado); text-decoration: none; font-weight: 700; }
+
+    @media (max-width: 560px) {
+      .hero { padding: 40px 0 48px; }
+      .btn { width: 100%; text-align: center; }
+      .contactos a { width: 100%; justify-content: center; }
+      .paso { padding-left: 58px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= HERO ================= -->
+  <header class="hero">
+    <div class="contenedor">
+      <img class="logo" src="logo.png" alt="Logo de Norma Watch Perú: balanza dorada sobre fondo granate" />
+      <h1>⚖️ Norma Watch Perú</h1>
+      <p class="lema">Su asistente legal del Diario Oficial <b>El Peruano</b> y <b>gob.pe</b>: monitorea, busca, interpreta y compara normas del Estado peruano — directamente desde su navegador.</p>
+      <span class="cinta">✅ Funciona al instante: sin registro, sin cuenta y sin claves</span>
+      <div class="botones">
+        <a class="btn btn-dorado" href="descargas/norma-watch-peru.zip" download>⬇️ Descargar la extensión (ZIP)</a>
+        <a class="btn btn-borde" href="https://github.com/oprbguitar/Norma-watch" target="_blank" rel="noopener">Ver en GitHub</a>
+        <a class="btn btn-borde" href="#instalacion">📘 Cómo instalar</a>
+      </div>
+      <small>Compatible con Google Chrome, Microsoft Edge y Brave · Windows, Mac y Linux</small>
+    </div>
+  </header>
+
+  <!-- ================= FUNCIONES GRATIS ================= -->
+  <section id="funciones">
+    <div class="contenedor">
+      <h2>Todo lo que hace por usted</h2>
+      <p class="intro">Pensada para abogados, administradores, consultores, estudios legales y servidores públicos — sin necesidad de conocimientos técnicos.</p>
+      <div class="tarjetas">
+        <div class="tarjeta">
+          <span class="sello gratis">GRATIS</span>
+          <span class="ico">🔎</span>
+          <h3>Buscador Legal Perú</h3>
+          <p>Busque normas, decretos y resoluciones en El Peruano y gob.pe, por últimos días o por rango de años. 10 búsquedas diarias incluidas.</p>
+        </div>
+        <div class="tarjeta">
+          <span class="sello gratis">GRATIS</span>
+          <span class="ico">📡</span>
+          <h3>Monitoreo automático</h3>
+          <p>Vigila El Peruano cada hora con sus palabras clave (SST, contrataciones, presupuesto, MEF…) y le avisa con una notificación.</p>
+        </div>
+        <div class="tarjeta">
+          <span class="sello gratis">GRATIS</span>
+          <span class="ico">📣</span>
+          <h3>Alertas a su correo y WhatsApp</h3>
+          <p>Deja el mensaje listo en Gmail o WhatsApp con las normas detectadas; usted solo confirma el envío.</p>
+        </div>
+        <div class="tarjeta">
+          <span class="sello gratis">GRATIS</span>
+          <span class="ico">📄</span>
+          <h3>Exportación profesional</h3>
+          <p>Guarde cualquier resultado en PDF, Word, Excel, Markdown o JSON, con enlaces a la ficha oficial y al PDF de cada norma.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PREMIUM (BLOQUEADO) ================= -->
+  <section class="zona-premium" id="premium">
+    <div class="contenedor">
+      <h2>⭐ Funciones Premium</h2>
+      <p class="intro">Herramientas avanzadas con Inteligencia Artificial. Vienen bloqueadas 🔒 y se habilitan únicamente previo contacto con el autor.</p>
+      <div class="tarjetas">
+        <div class="tarjeta">
+          <span class="sello premium">🔒 PREMIUM</span>
+          <span class="ico">🔍</span>
+          <h3>Interpretador de Normas</h3>
+          <p>Explica cualquier norma en lenguaje claro: obligaciones, a quién aplica, plazos, sanciones y riesgos.</p>
+        </div>
+        <div class="tarjeta">
+          <span class="sello premium">🔒 PREMIUM</span>
+          <span class="ico">📅</span>
+          <h3>Línea de Tiempo Legal</h3>
+          <p>Convierte una norma o expediente en una línea de tiempo con fechas, hitos, modificaciones y vigencia.</p>
+        </div>
+        <div class="tarjeta">
+          <span class="sello premium">🔒 PREMIUM</span>
+          <span class="ico">⚔️</span>
+          <h3>Comparador Legal IA</h3>
+          <p>Compara dos normas o versiones y explica los cambios relevantes artículo por artículo.</p>
+        </div>
+        <div class="tarjeta">
+          <span class="sello premium">🔒 PREMIUM</span>
+          <span class="ico">📋</span>
+          <h3>Resumen ejecutivo diario + análisis de búsquedas</h3>
+          <p>Resumen diario con análisis de impacto y contraste inteligente de resultados. Incluye búsquedas ilimitadas.</p>
+        </div>
+      </div>
+      <div class="candado-grande">
+        <b>🔒 ¿Cómo activo las funciones Premium?</b>
+        <p>Las funciones Premium no se pueden activar por su cuenta: solicite su código de activación al autor y recíbalo en minutos. Indique su nombre y el uso que le dará (estudio legal, consultoría, entidad pública, etc.).</p>
+        <div class="contactos">
+          <a href="mailto:peru.labs.pe@gmail.com?subject=Solicito%20activaci%C3%B3n%20Premium%20de%20Norma%20Watch%20Per%C3%BA">✉️ peru.labs.pe@gmail.com</a>
+          <a class="sec" href="https://wa.me/51973337773?text=Hola%2C%20quiero%20activar%20Premium%20en%20Norma%20Watch%20Per%C3%BA" target="_blank" rel="noopener">📲 WhatsApp 973 337 773</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INSTALACIÓN ================= -->
+  <section id="instalacion">
+    <div class="contenedor">
+      <h2>📘 Instalación en 5 pasos</h2>
+      <p class="intro">No necesita la Chrome Web Store ni conocimientos técnicos. Tarda menos de 2 minutos.</p>
+      <div class="pasos">
+        <div class="paso"><b>Descargue el ZIP</b> con el botón <a href="descargas/norma-watch-peru.zip" download>⬇️ Descargar la extensión</a> y <b>descomprímalo</b> en una carpeta de su computadora (clic derecho → «Extraer todo…»). No borre esa carpeta después.</div>
+        <div class="paso">Abra Google Chrome y escriba <code>chrome://extensions</code> en la barra de direcciones (en Edge: <code>edge://extensions</code>).</div>
+        <div class="paso">Active el <b>«Modo de desarrollador»</b> con el interruptor de la esquina superior derecha.</div>
+        <div class="paso">Pulse <b>«Cargar extensión sin empaquetar»</b> y seleccione la carpeta <code>extension</code> que descomprimió.</div>
+        <div class="paso">¡Listo! Fije el ícono ⚖️ con el pin de la barra de extensiones y entre a ⚙️ Configuración para elegir sus palabras clave y sus canales de alerta.</div>
+      </div>
+      <p class="nota-instal">Guía detallada con imágenes y solución de problemas en <a href="https://github.com/oprbguitar/Norma-watch/blob/main/INSTALACION.md" target="_blank" rel="noopener">INSTALACION.md</a>.</p>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p><b>⚖️ Norma Watch Perú</b> v2.0 · Fuentes oficiales: Diario Oficial El Peruano y gob.pe</p>
+    <p>Autor: Pierre R. · <a href="mailto:peru.labs.pe@gmail.com">peru.labs.pe@gmail.com</a> · <a href="https://github.com/oprbguitar/Norma-watch" target="_blank" rel="noopener">GitHub</a></p>
+  </footer>
+
+</body>
+</html>
