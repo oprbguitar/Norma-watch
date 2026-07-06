@@ -16,6 +16,7 @@
     </div>
     <div class="cab-der">
       <span id="chipLicencia" class="chip-lic">Versión gratuita</span>
+      <button id="btnFijar" class="icono" title="Fijar al costado del navegador (panel lateral)">📌</button>
       <button id="btnOpciones" class="icono" title="Configuración (API keys, palabras clave, alertas)">⚙️</button>
     </div>
   </header>
@@ -83,7 +84,10 @@
           </div>
         </div>
         <div id="panelAnalisis" class="panel-ia" hidden>
-          <h3>✨ Análisis y contraste de resultados</h3>
+          <div class="barra-resultados">
+            <h3>✨ Análisis y contraste de resultados</h3>
+            <button id="btnCopiarAnalisis" class="mini">📋 Copiar</button>
+          </div>
           <pre id="txtAnalisis"></pre>
         </div>
         <div id="listaBusqueda"></div>
@@ -173,7 +177,9 @@
         <div id="resultadoHerr" class="panel-ia" hidden>
           <div class="barra-resultados">
             <h3 id="tituloResultadoHerr"></h3>
-            <span class="exporta">Exportar:
+            <span class="exporta">
+              <button id="btnCopiarHerr">📋 Copiar</button>
+              Exportar:
               <button data-expherr="pdf">PDF</button><button data-expherr="word">Word</button><button data-expherr="md">MD</button><button data-expherr="json">JSON</button>
             </span>
           </div>

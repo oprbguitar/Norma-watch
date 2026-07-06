@@ -165,8 +165,12 @@
           </div>
           <div>
             <label class="tit">Fuente</label>
-            <span style="font-size:13px">🏛️ gob.pe — buscador oficial del Estado</span>
-            <p style="font-size:11px;color:#94a3b8;max-width:280px;margin-top:4px">La aplicación instalada busca además directamente en el Diario Oficial El Peruano.</p>
+            <select id="selFuente">
+              <option value="ambas" selected>El Peruano + gob.pe</option>
+              <option value="gobpe">Solo gob.pe (todas las entidades)</option>
+              <option value="elperuano">Solo El Peruano (diario oficial)</option>
+            </select>
+            <p style="font-size:11px;color:#94a3b8;max-width:280px;margin-top:4px">El Peruano solo admite búsquedas por días recientes; el rango de años usa gob.pe. Resultados ordenados del más reciente al más antiguo.</p>
           </div>
         </div>
         <p class="contador" id="contador"></p>
@@ -176,6 +180,13 @@
       <div id="resultados" hidden>
         <div class="barra-res">
           <b id="lblRes"></b>
+          <span class="exporta">Ver:
+            <select id="selVer" style="border:1px solid #d4dae3;border-radius:7px;padding:4px 6px;font-size:12px;font-family:inherit">
+              <option value="10" selected>10</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </span>
           <span class="exporta" id="zonaExporta">Exportar:
             <button data-exp="pdf">PDF</button><button data-exp="word">Word</button><button data-exp="excel">Excel</button><button data-exp="md">MD</button><button data-exp="json">JSON</button>
           </span>
@@ -292,6 +303,13 @@ function estado(msg, clase = "") {
 
 const sinTags = (s) => { const d = document.createElement("div"); d.innerHTML = s || ""; return d.textContent.replace(/\s+/g, " ").trim(); };
 const fmtGob = (d) => `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+const fmtPe = (d) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+const fmtUS = (d) => `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
+const norm = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+function fechaMs(f) {
+  const m = (f || "").match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  return m ? new Date(+m[3], +m[2] - 1, +m[1]).getTime() : 0;
+}
 
 // ---------- conexión a gob.pe con puentes CORS de respaldo ----------
 async function fetchJson(url) {
@@ -313,7 +331,7 @@ async function fetchJson(url) {
 
 async function buscarGobPe(term, desde, hasta) {
   const resultados = [];
-  for (const p of [1, 2, 3]) {
+  for (const p of [1, 2, 3, 4, 5]) {
     const url =
       "https://www.gob.pe/busquedas.json?contenido%5B%5D=normas&term=" + encodeURIComponent(term) +
       "&desde=" + fmtGob(desde) + "&hasta=" + fmtGob(hasta) + (p > 1 ? "&sheet=" + p : "");
@@ -334,6 +352,54 @@ async function buscarGobPe(term, desde, hasta) {
     if (items.length < 25) break;
   }
   return resultados;
+}
+
+// ---------- fuente 2: El Peruano (diario oficial) vía puente CORS ----------
+async function fetchElPeruano(d1, d2) {
+  const destino = "https://diariooficial.elperuano.pe/Normas/Filtro?dateparam=" + encodeURIComponent(fmtUS(d2) + " 00:00:00");
+  const body = new URLSearchParams({ cddesde: fmtPe(d1), cdhasta: fmtPe(d2) });
+  const intentos = [destino, "https://corsproxy.io/?url=" + encodeURIComponent(destino)];
+  let ultimoErr = null;
+  for (const u of intentos) {
+    try {
+      const resp = await fetch(u, { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" }, body });
+      if (!resp.ok) { ultimoErr = new Error("HTTP " + resp.status); continue; }
+      return await resp.text();
+    } catch (e) { ultimoErr = e; }
+  }
+  throw ultimoErr || new Error("Sin conexión con El Peruano");
+}
+
+async function buscarElPeruano(desde, hasta) {
+  // bloques de máx. 15 días (límite del sitio), tope 7 bloques para la demo
+  const bloques = [];
+  let cursor = new Date(desde);
+  while (cursor < hasta && bloques.length < 7) {
+    const fin = new Date(Math.min(hasta.getTime(), cursor.getTime() + 14 * 86400000));
+    bloques.push([new Date(cursor), fin]);
+    cursor = new Date(fin.getTime() + 86400000);
+  }
+  const listas = await Promise.all(bloques.map(async ([d1, d2]) => parseElPeruano(await fetchElPeruano(d1, d2))));
+  return listas.flat();
+}
+
+function parseElPeruano(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return [...doc.querySelectorAll("article.edicionesoficiales_articulos")].map((art) => {
+    const entidad = art.querySelector("h4")?.textContent.trim() || "SIN ENTIDAD";
+    const a = art.querySelector("h5 a");
+    const titulo = a?.textContent.trim() || "Norma sin título";
+    let urlFicha = a?.getAttribute("href") || "";
+    if (urlFicha && !urlFicha.startsWith("http")) urlFicha = "https://diariooficial.elperuano.pe" + urlFicha;
+    let fecha = "", sumilla = "";
+    art.querySelectorAll("p").forEach((p) => {
+      const t = p.textContent.trim();
+      const m = t.match(/Fecha\s*:\s*(\d{2}\/\d{2}\/\d{4})/);
+      if (m) fecha = m[1];
+      else if (t && !sumilla) sumilla = t;
+    });
+    return { entidad, titulo, sumilla, fecha, urlFicha, urlPdf: "", fuente: "El Peruano" };
+  });
 }
 
 // ---------- búsqueda ----------
@@ -359,30 +425,59 @@ async function buscar() {
     desde = new Date(Date.now() - parseInt($("selDias").value, 10) * 86400000);
   }
 
+  const fuente = $("selFuente").value;
   const b = $("btnBuscar");
   b.disabled = true;
-  estado("🔎 Buscando «" + term + "» en gob.pe…");
+  estado("🔎 Buscando «" + term + "»…");
   $("resultados").hidden = true;
 
   try {
-    resultadosBusqueda = await buscarGobPe(term, desde, hasta);
+    const tareas = [];
+    // El Peruano no admite rangos de años: solo se usa en modo días
+    if (!modoAnios && (fuente === "ambas" || fuente === "elperuano")) tareas.push(buscarElPeruano(desde, hasta));
+    if (fuente === "ambas" || fuente === "gobpe" || modoAnios) tareas.push(buscarGobPe(term, desde, hasta));
+    if (modoAnios && fuente === "elperuano") estado("ℹ️ El Peruano solo admite días recientes; el rango de años se busca en gob.pe.");
+
+    const res = await Promise.allSettled(tareas);
+    const errores = res.filter((r) => r.status === "rejected").map((r) => r.reason?.message || "error");
+    let todos = res.filter((r) => r.status === "fulfilled").flatMap((r) => r.value);
+    if (!todos.length && errores.length) throw new Error(errores.join("; "));
+
+    // dedupe por título
+    const visto = new Set();
+    todos = todos.filter((n) => { const k = norm(n.titulo); if (visto.has(k)) return false; visto.add(k); return true; });
+
+    // filtro estricto: todas las palabras del término deben aparecer
+    // (así «ministerio público» trae solo esa entidad, y «drogas» solo normas con esa palabra)
+    const q = norm(term).split(/\s+/).filter((w) => w.length > 2 || /^\d+$/.test(w));
+    todos = todos.filter((n) => { const pajar = norm(`${n.entidad} ${n.titulo} ${n.sumilla}`); return q.every((w) => pajar.includes(w)); });
+
+    // orden: del más reciente al más antiguo
+    todos.sort((a, b2) => fechaMs(b2.fecha) - fechaMs(a.fecha));
+
+    resultadosBusqueda = todos;
     render(term);
-    estado(`✅ ${resultadosBusqueda.length} resultado(s) para «${term}».`, "ok");
+    const msg = `✅ ${todos.length} resultado(s) para «${term}».` + (errores.length ? ` (⚠️ una fuente no respondió: ${errores.join("; ")})` : "");
+    estado(msg, errores.length ? "" : "ok");
   } catch (e) {
-    estado("⚠️ No se pudo consultar gob.pe desde su red (" + (e.message || "error") + "). Vuelva a intentarlo en unos segundos, o pruebe la búsqueda completa instalando la aplicación gratis.", "error");
+    estado("⚠️ No se pudo completar la búsqueda (" + (e.message || "error") + "). Vuelva a intentarlo en unos segundos, o pruebe la búsqueda completa instalando la aplicación gratis.", "error");
   } finally {
     b.disabled = false;
   }
 }
+$("selVer").addEventListener("change", () => { if (resultadosBusqueda.length) render($("txtBuscar").value.trim()); });
 $("btnBuscar").addEventListener("click", buscar);
 $("txtBuscar").addEventListener("keydown", (e) => { if (e.key === "Enter") buscar(); });
 
 function render(term) {
   $("resultados").hidden = false;
-  $("lblRes").textContent = `📑 ${resultadosBusqueda.length} resultado(s) para «${term}»`;
+  const ver = parseInt($("selVer").value, 10);
+  const visibles = resultadosBusqueda.slice(0, ver);
+  $("lblRes").textContent = `📑 ${resultadosBusqueda.length} resultado(s) para «${term}»` +
+    (resultadosBusqueda.length > ver ? ` · mostrando ${ver}` : "") + " · del más reciente al más antiguo";
   const lista = $("lista");
   lista.innerHTML = resultadosBusqueda.length ? "" : '<p class="vacio">Sin resultados. Pruebe con otras palabras o amplíe el periodo.</p>';
-  resultadosBusqueda.forEach((n) => {
+  visibles.forEach((n) => {
     const div = document.createElement("div");
     div.className = "norma";
     div.innerHTML = `
