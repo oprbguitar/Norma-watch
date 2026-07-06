@@ -2,6 +2,7 @@
 
 body {
   width: 780px;
+  max-width: 100vw;
   height: 580px;
   font-family: "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
@@ -270,4 +271,15 @@ footer {
   border-top: 1px solid #e2e8f0;
   background: #fff;
   text-align: center;
+}
+
+
+/* ---------- modo panel lateral (ventana angosta) ---------- */
+@media (max-width: 520px) {
+  body { width: 100vw; height: 100vh; }
+  .cards { grid-template-columns: 1fr; }
+  .tab { font-size: 11px; padding: 8px 2px; }
+  .dos-columnas { flex-direction: column; }
+  .fila-opciones { gap: 10px; }
+  header { flex-wrap: wrap; gap: 6px; }
 }

@@ -97,6 +97,11 @@ function estado(msg, clase = "") {
 $("btnBuscarNorma").addEventListener("click", buscarNormas);
 $("txtBuscar").addEventListener("keydown", (e) => { if (e.key === "Enter") buscarNormas(); });
 
+function fechaMs(f) {
+  const m = (f || "").match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  return m ? new Date(+m[3], +m[2] - 1, +m[1]).getTime() : 0;
+}
+
 const aPeruanoFmt = (d) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 const aUSFmt = (d) => `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
 const aGobPeFmt = (d) => `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
@@ -146,6 +151,17 @@ async function buscarNormas() {
       yaVisto.add(k);
       return true;
     });
+
+    // filtro estricto: todas las palabras del término deben aparecer
+    // (así "ministerio público" no trae resultados de otras entidades)
+    const q = normalizar(term).split(/\s+/).filter((w) => w.length > 2 || /^\d+$/.test(w));
+    resultadosBusqueda = resultadosBusqueda.filter((n) => {
+      const pajar = normalizar(`${n.entidad} ${n.titulo} ${n.sumilla}`);
+      return q.every((w) => pajar.includes(w));
+    });
+
+    // orden: del más reciente al más antiguo
+    resultadosBusqueda.sort((a, b) => fechaMs(b.fecha) - fechaMs(a.fecha));
 
     renderBusqueda(term);
     const msg = `✅ ${resultadosBusqueda.length} resultado(s) para «${term}».` + (errores.length ? `\n⚠️ Una fuente falló: ${errores.join("; ")}` : "");
@@ -299,7 +315,8 @@ $("btnAnalisisIA").addEventListener("click", async () => {
       .map((n, i) => `${i + 1}. [${n.fuente}] ${n.entidad}: ${n.titulo}. ${n.sumilla} (${n.fecha}) ${n.urlFicha}`)
       .join("\n");
     const prompt =
-      `Eres un analista legal peruano. El usuario buscó: «${$("txtBuscar").value.trim()}».\n` +
+      `Eres ${perfilIA(config)}. El usuario buscó: «${$("txtBuscar").value.trim()}».\n` +
+      `Sé BREVE y directo: usa viñetas cortas, sin párrafos largos.\n` +
       `Analiza y CONTRASTA los siguientes resultados (no solo los resumas):\n` +
       `1) Ordena los 5 más relevantes para la búsqueda y explica por qué.\n` +
       `2) Indica qué ministerio/entidad emite cada norma relevante, qué autoriza, resuelve o modifica, y su fecha.\n` +
@@ -501,7 +518,7 @@ $("btnInterpretar").addEventListener("click", () => {
   ejecutarHerramienta(
     $("btnInterpretar"),
     "🔍 Interpretación de la norma",
-    `Eres un abogado peruano experto en derecho administrativo y compliance. Interpreta la siguiente norma para un lector NO técnico y responde en español con estas secciones claras:\n\n` +
+    `Eres ${perfilIA(config)}. Interpreta la siguiente norma para un lector NO técnico y responde en español, BREVE y en viñetas cortas, con estas secciones:\n\n` +
     `📌 ¿QUÉ ES Y QUÉ BUSCA? (2-3 líneas)\n👥 ¿A QUIÉN APLICA? (sujetos obligados y beneficiarios)\n📋 OBLIGACIONES PRINCIPALES (lista numerada)\n⏰ PLAZOS Y VIGENCIA (fechas concretas si las hay)\n⚠️ SANCIONES E INCUMPLIMIENTO\n🎯 RIESGOS Y RECOMENDACIONES PRÁCTICAS (máx. 3 puntos)\n\n` +
     `Si algún dato no aparece en el texto, di "No se especifica en el texto". No inventes.\n\nTEXTO DE LA NORMA:\n${texto}`
   );
@@ -527,7 +544,7 @@ $("btnComparar").addEventListener("click", () => {
   ejecutarHerramienta(
     $("btnComparar"),
     "⚔️ Comparación legal",
-    `Eres un abogado peruano. Compara las dos normas (o versiones de una misma norma) siguientes y explica los cambios relevantes ARTÍCULO POR ARTÍCULO en español claro:\n\n` +
+    `Eres ${perfilIA(config)}. Compara las dos normas (o versiones de una misma norma) siguientes y explica los cambios relevantes ARTÍCULO POR ARTÍCULO en español claro y BREVE (viñetas, sin relleno):\n\n` +
     `Para cada artículo o sección que cambie: indica el número/nombre, qué decía antes (versión A), qué dice ahora (versión B) y el impacto práctico del cambio.\n` +
     `Luego lista: artículos NUEVOS, artículos DEROGADOS/ELIMINADOS y artículos SIN CAMBIOS relevantes (solo enumerar).\n` +
     `Cierra con "Conclusión para el usuario" en 3 líneas sencillas.\nNo inventes contenido que no esté en los textos.\n\n` +
@@ -567,4 +584,35 @@ $("btnActivar").addEventListener("click", async () => {
     m.textContent = "❌ " + r.error;
     m.style.color = "#dc2626";
   }
+});
+
+
+// ============================================================
+// 📋 COPIAR RESULTADOS DE IA
+// ============================================================
+async function copiarTexto(texto) {
+  if (!texto) return estado("No hay texto para copiar.", "error");
+  await navigator.clipboard.writeText(texto);
+  estado("📋 Copiado al portapapeles.", "ok");
+}
+$("btnCopiarAnalisis").addEventListener("click", () => copiarTexto(analisisBusqueda));
+$("btnCopiarHerr").addEventListener("click", () => copiarTexto(ultimoResultadoHerr?.texto));
+
+// ============================================================
+// 📌 FIJAR AL COSTADO DEL NAVEGADOR (panel lateral)
+// ============================================================
+$("btnFijar").addEventListener("click", async () => {
+  try {
+    if (!chrome.sidePanel?.open) throw new Error("Su navegador no soporta el panel lateral (requiere Chrome 116 o superior).");
+    const win = await chrome.windows.getCurrent();
+    await chrome.sidePanel.open({ windowId: win.id });
+    window.close();
+  } catch (e) {
+    estado("⚠️ " + e.message, "error");
+  }
+});
+
+// cerrar el modal Premium tocando fuera de la caja (se sigue usando la versión básica)
+$("modalPremium").addEventListener("click", (e) => {
+  if (e.target === $("modalPremium")) { $("modalPremium").hidden = true; herrPendiente = null; }
 });

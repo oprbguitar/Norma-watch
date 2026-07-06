@@ -11,7 +11,8 @@ const DEFAULTS = {
   frecuenciaMin: 60,
   horaResumen: 8,
   abrirCorreoAuto: false,
-  diasRetro: 3
+  diasRetro: 3,
+  perfil: "abogado"
 };
 
 let keywords = [];
@@ -49,6 +50,7 @@ async function init() {
   $("whatsapp").value = cfg.whatsapp;
   $("abrirCorreoAuto").checked = cfg.abrirCorreoAuto;
   $("selProveedor").value = cfg.proveedor;
+  $("selPerfil").value = cfg.perfil || "abogado";
   refrescarProveedor(cfg.modelo);
   refrescarLicencia();
 }
@@ -93,7 +95,7 @@ function refrescarProveedor(modeloGuardado = "") {
   p.modelos.forEach((m, i) => {
     const op = document.createElement("option");
     op.value = m;
-    op.textContent = m + (i === 0 ? "  (recomendado)" : "");
+    op.textContent = m + (i === 0 ? "  (recomendado)" : "") + iaEtiquetaModelo(provId, m);
     sel.appendChild(op);
   });
   const otro = document.createElement("option");
@@ -144,6 +146,7 @@ $("btnGuardar").addEventListener("click", async () => {
     abrirCorreoAuto: $("abrirCorreoAuto").checked,
     proveedor: $("selProveedor").value,
     modelo: modeloSel === "__otro__" ? $("txtModeloOtro").value.trim() : modeloSel,
+    perfil: $("selPerfil").value,
     apiKeys: { ...apiKeys }
   };
   await chrome.storage.local.set({ config });

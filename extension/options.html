@@ -88,7 +88,13 @@
       <label for="selModelo">Modelo de IA</label>
       <select id="selModelo"></select>
       <input id="txtModeloOtro" type="text" placeholder="Escriba el nombre exacto del modelo…" style="display:none; margin-top:6px" />
-      <p class="ayuda">El primero de la lista es el recomendado (rápido y económico).</p>
+      <p class="ayuda">El primero de la lista es el recomendado. <b>🆓 = modelo con capa gratuita</b> · <b>✍️ = orientado a redacción</b>.</p>
+      <label for="selPerfil">Perfil del análisis IA (cómo analiza los documentos)</label>
+      <select id="selPerfil">
+        <option value="abogado">⚖️ Abogado — enfoque legal práctico</option>
+        <option value="analista">📚 Analista jurídico — técnico-normativo</option>
+        <option value="economista">📊 Economista — impacto económico y fiscal</option>
+      </select>
     </fieldset>
 
     <fieldset>

@@ -17,7 +17,8 @@ const DEFAULTS = {
   frecuenciaMin: 60,    // cada cuántos minutos revisar El Peruano
   horaResumen: 8,       // hora local del resumen diario (0-23)
   abrirCorreoAuto: false, // al generar el resumen diario, abrir Gmail con el borrador listo
-  diasRetro: 3          // días hacia atrás que se revisan en cada barrido
+  diasRetro: 3,         // días hacia atrás que se revisan en cada barrido
+  perfil: "abogado"     // perfil profesional del análisis IA
 };
 
 // Sinónimos: si la palabra clave es corta/ambigua, se buscan también sus variantes largas
@@ -260,8 +261,8 @@ async function generarResumenDiario({ abrirAlertas = false } = {}) {
       .map((n) => `- [${n.keywords.join(", ")}] ${n.entidad}: ${n.titulo}. ${n.sumilla} (Fecha: ${n.fecha}) ${n.urlFicha}`)
       .join("\n");
     const prompt =
-      `Eres el analista legal de "Norma Watch Perú". Redacta en español un RESUMEN EJECUTIVO diario de las siguientes normas publicadas en el Diario Oficial El Peruano, dirigido a abogados, administradores, consultores y servidores públicos.\n\n` +
-      `Formato:\n1) Titular del día (una línea).\n2) Resumen por tema (agrupa por palabra clave: ${cfg.keywords.join(", ")}), explicando en 1-2 frases el impacto práctico de cada norma.\n3) "Acción sugerida" con máximo 3 puntos.\nIncluye el enlace de cada norma citada. Sé preciso, no inventes normas que no estén en la lista.\n\nNORMAS DETECTADAS:\n${lista}`;
+      `Eres ${perfilIA(cfg)} de "Norma Watch Perú". Redacta en español un RESUMEN EJECUTIVO BREVE de las siguientes normas publicadas en el Diario Oficial El Peruano.\n\n` +
+      `Sé BREVE: viñetas de máximo 2 líneas, sin párrafos largos.\nFormato:\n1) Titular del día (una línea).\n2) Puntos clave por tema (agrupa por palabra clave: ${cfg.keywords.join(", ")}), señalando en una viñeta el impacto práctico de cada norma.\n3) "Acción sugerida" (máximo 3 viñetas).\nIncluye el enlace de cada norma citada. No inventes normas que no estén en la lista.\n\nNORMAS DETECTADAS:\n${lista}`;
     try {
       const analisis = await llamarIA(cfg, prompt);
       texto = `📋 Norma Watch Perú — Resumen diario ${new Date().toLocaleDateString("es-PE")}\n\n${analisis}`;
